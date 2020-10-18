@@ -1,3 +1,5 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flash_chat/components/rounded_button.dart';
 import 'package:flash_chat/screens/login_screen.dart';
 import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   AnimationController animationController;
-  Animation curvedAnimation;
+  Animation animation;
 
   @override
   void initState() {
@@ -20,21 +22,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
     animationController =
         AnimationController(duration: Duration(seconds: 1), vsync: this);
-    curvedAnimation =
-        CurvedAnimation(parent: animationController, curve: Curves.easeIn);
+    animation = ColorTween(begin: Colors.blueGrey, end: Colors.white)
+        .animate(animationController);
 
     animationController.addListener(() {
-      print(curvedAnimation.value);
       setState(() {});
-    });
-
-    curvedAnimation.addStatusListener((status) {
-      print(status);
-      if (status == AnimationStatus.completed) {
-        animationController.reverse(from: 1.0);
-      } else if (status == AnimationStatus.dismissed) {
-        animationController.forward();
-      }
     });
 
     animationController.forward();
@@ -49,7 +41,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: animation.value,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -62,13 +54,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   tag: 'logo_tag',
                   child: Container(
                     child: Image.asset('images/logo.png'),
-                    height: curvedAnimation.value * 100,
+                    height: 60.0,
                   ),
                 ),
-                Text(
-                  'Flash Chat',
-                  style: TextStyle(
+                TypewriterAnimatedTextKit(
+                  text: ['Flash Chat'],
+                  textStyle: TextStyle(
                     fontSize: 34.0,
+                    color: Colors.red,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -77,42 +70,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             SizedBox(
               height: 48.0,
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                elevation: 5.0,
+            RoundedButton(
                 color: Colors.lightBlueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, LoginScreen.id);
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Log In',
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
+                label: 'Log In',
+                onPress: () {
+                  Navigator.pushNamed(context, LoginScreen.id);
+                }),
+            RoundedButton(
                 color: Colors.blueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                elevation: 5.0,
-                child: MaterialButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, RegistrationScreen.id);
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Register',
-                  ),
-                ),
-              ),
-            ),
+                label: 'Register',
+                onPress: () {
+                  Navigator.pushNamed(context, RegistrationScreen.id);
+                }),
           ],
         ),
       ),
