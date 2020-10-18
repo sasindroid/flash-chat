@@ -1,3 +1,5 @@
+import 'package:flash_chat/screens/login_screen.dart';
+import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -7,7 +9,43 @@ class WelcomeScreen extends StatefulWidget {
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController animationController;
+  Animation curvedAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    animationController =
+        AnimationController(duration: Duration(seconds: 1), vsync: this);
+    curvedAnimation =
+        CurvedAnimation(parent: animationController, curve: Curves.easeIn);
+
+    animationController.addListener(() {
+      print(curvedAnimation.value);
+      setState(() {});
+    });
+
+    curvedAnimation.addStatusListener((status) {
+      print(status);
+      if (status == AnimationStatus.completed) {
+        animationController.reverse(from: 1.0);
+      } else if (status == AnimationStatus.dismissed) {
+        animationController.forward();
+      }
+    });
+
+    animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,14 +58,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Container(
-                  child: Image.asset('images/logo.png'),
-                  height: 60.0,
+                Hero(
+                  tag: 'logo_tag',
+                  child: Container(
+                    child: Image.asset('images/logo.png'),
+                    height: curvedAnimation.value * 100,
+                  ),
                 ),
                 Text(
                   'Flash Chat',
                   style: TextStyle(
-                    fontSize: 45.0,
+                    fontSize: 34.0,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -44,7 +85,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 borderRadius: BorderRadius.circular(30.0),
                 child: MaterialButton(
                   onPressed: () {
-                    //Go to login screen.
+                    Navigator.pushNamed(context, LoginScreen.id);
                   },
                   minWidth: 200.0,
                   height: 42.0,
@@ -62,7 +103,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 elevation: 5.0,
                 child: MaterialButton(
                   onPressed: () {
-                    //Go to registration screen.
+                    Navigator.pushNamed(context, RegistrationScreen.id);
                   },
                   minWidth: 200.0,
                   height: 42.0,
